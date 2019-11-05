@@ -1,15 +1,17 @@
-
 <template>
     <div class="imgUpload" id="mpupload">
         <!-- <div id="ossfile">你的浏览器不支持flash,Silverlight或者HTML5！</div> -->
 
-        <div id="container" style="margin-bottom:20px;">
+        <div id="container">
             <a id="selectfiles" href="javascript:void(0);" class="btn">
                 <el-button type="primary" plain>选择文件</el-button>
             </a>
             <!-- <a id="postfiles" href="javascript:void(0);" class="btn">
                 <el-button type="primary" plain @click="send">开始上传</el-button>
             </a>-->
+        </div>
+        <div>
+            <span style="color:red;">*</span>可上传jpg,gif,png,bmp,jpeg文件
         </div>
         <ul id="ossfilea" class="ossfile" style="display:block">
             <li id="arr_li" v-for="(item,index) in licenceImg">
@@ -26,6 +28,7 @@
 
 <script>
 import axios from 'axios';
+// import $ from 'jquery';
 // import plupload from 'plupload';
 //
 var accessid = '';
@@ -140,7 +143,10 @@ function set_upload_param(up, filename, ret) {
 }
 
 export default {
-    
+    // model: {
+    //     prop: 'msg',
+    //     event: 'ee'
+    // },
     props: {
         msg: '',
         licenceImg: {
@@ -185,8 +191,10 @@ export default {
                 filters: {
                     mime_types: [
                         //只允许上传图片和zip文件
-                        { title: 'Image files', extensions: 'jpg,gif,png,bmp' },
-                        { title: 'Zip files', extensions: 'zip,rar,ipa' }
+                        {
+                            title: 'Image files',
+                            extensions: 'jpg,gif,png,bmp,jpeg'
+                        }
                     ],
                     max_file_size: '20mb', //最大只能上传10mb的文件
                     prevent_duplicates: false //不允许选取重复文件
@@ -216,6 +224,7 @@ export default {
                             });
                         } else {
                             _this.$alert('最多只能上传9张图片');
+                            uploader.files.length = _this.licenceImg.length;
                             //uploader.files.splice(1, 1);
 
                             //'<div class="progress"><div class="progress-bar" style="width: 0%"></div></div>'
@@ -256,23 +265,7 @@ export default {
                             }
                             _this.$emit('listenToChildEvent', _this.licenceImg);
 
-                            // document.getElementById('ossfilea').innerHTML += '';
-                            // $('#ossfilea').html();
-                            // 引入的图片
-                            // $('#ossfilea').empty();
-                            // for (var k = 0; k < len; k++) {
-                            //     var li_img =
-                            //         '<li class="arr_li"><div class="tukuang"><img class="imgge" style="width:86px;height: 60px;float:left" src="' +
-                            //         _this.licenceImg[k] +
-                            //         '" alt=""/><div class="tuu" id="' +
-                            //         file.id +
-                            //         '">' +
-                            //         file.name +
-                            //         ' (' +
-                            //         plupload.formatSize(file.size) +
-                            //         ')</div><div class="clear"></div></div><span class="dela" >×</span></li>';
-                            //     $('#ossfilea').append(li_img);
-                            // }
+                           
                         } else if (info.status == 203) {
                         } else {
                         }
@@ -286,27 +279,14 @@ export default {
                         } else if (err.code == -602) {
                             _this.$alert('已经上传过一次');
                         } else {
-                            _this.$alert('已经上传过一次');
+                            _this.$alert(err);
                         }
                     }
                 }
             });
             uploader.init();
             _this.upImgList = [];
-            // $('#ossfilea').on('click', 'li .dela', function() {
-            // var i = $(this)
-            //     .closest('li')
-            //     .index();
-            // $(this)
-            //     .closest('li')
-            //     .remove();
-            // console.log('44++' + _this.licenceImg);
-            // uploader.files.pop();
-            // _this.upImgList.splice(i, 1);
-            // _this.licenceImg.splice(i, 1);
-            // console.log('66++' + _this.licenceImg);
-            // _this.$emit('listenToChildEvent', _this.licenceImg);
-            // });
+           
         },
         deletePic(index) {
             uploader.files.pop();
@@ -319,9 +299,8 @@ export default {
         isShow: {
             handler(newValue, oldValue) {
                 if (newValue.length === 0) {
-                    document.getElementById('ossfilea').innerHTML += '';
-                    
-                    uploader.files.pop();
+                    document.getElementById('ossfilea').innerHTML = '';
+                    uploader.files.length = 0;
                 }
             },
             deep: true
@@ -370,3 +349,4 @@ export default {
     cursor: pointer;
 }
 </style>
+
