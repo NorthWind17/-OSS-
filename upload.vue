@@ -265,7 +265,23 @@ export default {
                             }
                             _this.$emit('listenToChildEvent', _this.licenceImg);
 
-                           
+                            // document.getElementById('ossfilea').innerHTML += '';
+                            // $('#ossfilea').html();
+                            // 引入的图片
+                            // $('#ossfilea').empty();
+                            // for (var k = 0; k < len; k++) {
+                            //     var li_img =
+                            //         '<li class="arr_li"><div class="tukuang"><img class="imgge" style="width:86px;height: 60px;float:left" src="' +
+                            //         _this.licenceImg[k] +
+                            //         '" alt=""/><div class="tuu" id="' +
+                            //         file.id +
+                            //         '">' +
+                            //         file.name +
+                            //         ' (' +
+                            //         plupload.formatSize(file.size) +
+                            //         ')</div><div class="clear"></div></div><span class="dela" >×</span></li>';
+                            //     $('#ossfilea').append(li_img);
+                            // }
                         } else if (info.status == 203) {
                         } else {
                         }
@@ -286,7 +302,20 @@ export default {
             });
             uploader.init();
             _this.upImgList = [];
-           
+            // $('#ossfilea').on('click', 'li .dela', function() {
+            // var i = $(this)
+            //     .closest('li')
+            //     .index();
+            // $(this)
+            //     .closest('li')
+            //     .remove();
+            // console.log('44++' + _this.licenceImg);
+            // uploader.files.pop();
+            // _this.upImgList.splice(i, 1);
+            // _this.licenceImg.splice(i, 1);
+            // console.log('66++' + _this.licenceImg);
+            // _this.$emit('listenToChildEvent', _this.licenceImg);
+            // });
         },
         deletePic(index) {
             uploader.files.pop();
@@ -349,4 +378,3 @@ export default {
     cursor: pointer;
 }
 </style>
-
