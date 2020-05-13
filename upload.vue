@@ -16,8 +16,14 @@
         <ul id="ossfilea" class="ossfile" style="display:block">
             <li id="arr_li" v-for="(item,index) in licenceImg">
                 <div class="tukuang">
-                    <img class="imgge" style="width:86px;height: 60px;float:left" :src="item" alt />
-                    <div class="tuu" :id="newFiles.id">{{newFiles.name}}</div>
+                    <img
+                        @click="lookimg(item)"
+                        class="imgge"
+                        style="width:86px;height: 60px;float:left"
+                        :src="item"
+                        alt="图片"
+                    />
+                    <div class="tuu" :id="newFiles[index].id">{{newFiles[index].name}}</div>
                     <div class="clear"></div>
                 </div>
                 <span class="dela" @click="deletePic(index)">×</span>
@@ -27,6 +33,7 @@
 </template>
 
 <script>
+import * as dd from 'dingtalk-jsapi';
 import axios from 'axios';
 // import $ from 'jquery';
 // import plupload from 'plupload';
@@ -70,7 +77,6 @@ function get_signature() {
         }
     );
 }
-get_signature();
 //随机名字
 function random_string(len) {
     var len = len || 32;
@@ -162,7 +168,7 @@ export default {
     data() {
         return {
             url: this.msg || '',
-            newFiles: '',
+            newFiles: [],
             newUp: '',
             licenceImg: [],
             aaa: []
@@ -173,6 +179,18 @@ export default {
         this.initPlUploader();
     },
     methods: {
+        lookimg(item) {
+            dd.ready(function() {
+                dd.biz.util.previewImage({
+                    urls: [item], //图片地址列表
+                    current: item, //当前显示的图片链接
+                    onSuccess: function(result) {
+                        /**/
+                    },
+                    onFail: function(err) {}
+                });
+            });
+        },
         /**
          * 初始化上传插件
          */
@@ -203,6 +221,7 @@ export default {
                 multiple_queues: true,
                 init: {
                     PostInit: function() {
+                        get_signature();
                         // document.getElementById('ossfile').innerHTML = '';
                         // document.getElementById(
                         //     'postfiles'
@@ -251,7 +270,7 @@ export default {
                             // let imageUrl = host + '/' + hostU;
 
                             _this.upImgList = [];
-                            _this.newFiles = file;
+                            _this.newFiles.push(file);
                             _this.newUp = plupload;
                             _this.upImgList.push(
                                 get_uploaded_object_name(file.name)
@@ -263,6 +282,7 @@ export default {
                                     hostUp + '/' + _this.upImgList[b]
                                 );
                             }
+
                             _this.$emit('listenToChildEvent', _this.licenceImg);
 
                             // document.getElementById('ossfilea').innerHTML += '';
@@ -289,13 +309,30 @@ export default {
 
                     Error: function(up, err) {
                         if (err.code == -600) {
-                            _this.$alert('上传过大');
+                            _this.$message({
+                                showClose: true,
+                                message: '上传文件过大',
+                                type: 'error'
+                            });
                         } else if (err.code == -601) {
-                            _this.$alert('上传格式不对');
+                            _this.$message({
+                                showClose: true,
+                                message:
+                                    '暂不支持此类文件，请上传xls或者xlxs的格式文件',
+                                type: 'error'
+                            });
                         } else if (err.code == -602) {
-                            _this.$alert('已经上传过一次');
+                            _this.$message({
+                                showClose: true,
+                                message: '已经上传过一次',
+                                type: 'error'
+                            });
                         } else {
-                            _this.$alert(err);
+                            _this.$message({
+                                showClose: true,
+                                message: '上传错误',
+                                type: 'error'
+                            });
                         }
                     }
                 }
@@ -318,7 +355,9 @@ export default {
             // });
         },
         deletePic(index) {
-            uploader.files.pop();
+            // uploader.files.pop();
+            uploader.files.splice(index, 1);
+            this.newFiles.splice(index, 1);
             this.upImgList.splice(index, 1);
             this.licenceImg.splice(index, 1);
             this.$emit('listenToChildEvent', this.licenceImg);
@@ -330,6 +369,7 @@ export default {
                 if (newValue.length === 0) {
                     document.getElementById('ossfilea').innerHTML = '';
                     uploader.files.length = 0;
+                    this.newFiles.length = 0;
                 }
             },
             deep: true
